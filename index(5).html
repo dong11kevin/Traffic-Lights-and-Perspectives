@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Context Changes Meaning</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#f4f4f4;margin:0;padding:20px;display:flex;justify-content:center}
+.card{max-width:900px;width:100%;background:#fff;padding:20px;border-radius:12px;box-shadow:0 4px 12px #0002}
+#light{width:110px;background:#222;border-radius:18px;padding:12px;margin:auto}
+.b{width:70px;height:70px;border-radius:50%;margin:10px auto;background:#444;opacity:.25}
+.active{opacity:1}
+.red.active{background:#d33}.yellow.active{background:#fc3}.green.active{background:#2b4}
+.roles button,.controls button{margin:4px;padding:8px 14px}
+.role{display:none;border:1px solid #ddd;border-radius:8px;padding:10px;margin-top:10px}
+.role.active{display:block}
+.note{background:#eef;padding:10px;border-radius:8px;margin-top:12px}
+.small{font-size:.9em;color:#555}
+</style>
+</head>
+<body><div class="card">
+<h1>One Signal, Four Meanings</h1>
+<p>Step through five seconds. Select a role to see what the same traffic light means from that perspective.</p>
+<div id="light">
+<div id="r" class="b red"></div>
+<div id="y" class="b yellow"></div>
+<div id="g" class="b green"></div>
+</div>
+<div class="controls">
+<button onclick="play()">▶ Play 5 Seconds</button>
+<span id="time">t = 0 s</span>
+</div>
+<div class="roles">
+<button onclick="showRole('driver')">Driver</button>
+<button onclick="showRole('walker')">Walker</button>
+<button onclick="showRole('cyclist')">Cyclist</button>
+<button onclick="showRole('observer')">Observer</button>
+</div>
+
+<div id="driver" class="role"><h3>Driver</h3><p id="driverText"></p></div>
+<div id="walker" class="role"><h3>Walker</h3><p id="walkerText"></p></div>
+<div id="cyclist" class="role"><h3>Cyclist</h3><p id="cyclistText"></p></div>
+<div id="observer" class="role"><h3>Observer</h3><p id="observerText"></p></div>
+
+<div class="note">
+<b>What to notice</b>
+<p>The same visible signal does not automatically carry the same meaning. Your role determines how you interpret it, and that interpretation can change as time passes.</p>
+</div>
+<div class="note small">
+<b>What this shows:</b> A simplified demonstration that context affects meaning.<br>
+<b>What this doesn't show:</b> Real traffic laws, all intersection types, or every possible traffic signal.
+</div>
+</div>
+<script>
+const timeline=[
+{t:0,color:"red"},
+{t:2,color:"green"},
+{t:4,color:"yellow"},
+{t:5,color:"red"}
+];
+let state=timeline[0];
+function render(){
+["r","y","g"].forEach(id=>document.getElementById(id).classList.remove("active"));
+document.getElementById(state.color[0]).classList.add("active");
+document.getElementById("time").textContent="t = "+state.t+" s";
+const msg={
+red:{driver:"Stop before entering the intersection.",walker:"Finish crossing only if already in the crosswalk; otherwise wait.",cyclist:"Stop like other vehicles unless using separate bicycle signals.",observer:"Different road users may respond differently to the same red light."},
+green:{driver:"Proceed if safe.",walker:"Vehicles have green; pedestrians may not have a walk signal.",cyclist:"Proceed if following the vehicle signal and it is safe.",observer:"One green light still carries different implications depending on role."},
+yellow:{driver:"Prepare to stop if it is safe.",walker:"Do not begin crossing.",cyclist:"Slow and prepare to stop.",observer:"The transition changes decisions for everyone."}
+}[state.color];
+driverText.textContent=msg.driver;
+walkerText.textContent=msg.walker;
+cyclistText.textContent=msg.cyclist;
+observerText.textContent=msg.observer;
+}
+function showRole(id){
+document.querySelectorAll(".role").forEach(e=>e.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+function play(){
+let i=0;
+render();
+const ints=setInterval(()=>{
+i++;
+if(i>=timeline.length){clearInterval(ints);return;}
+state=timeline[i];
+render();
+},1500);
+}
+render();showRole("driver");
+</script>
+</body></html>
